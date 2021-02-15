@@ -28,7 +28,7 @@ async function buildPushAndDeploy() {
     );
     console.log("Image built 🛠");
 
-    await exec.exec(herokuAction("push"));
+    await exec.exec(`docker push registry.heroku.com/${appName}/${formation}`);
     console.log("Container pushed to Heroku Container Registry ⏫");
 
     await exec.exec(herokuAction("release"));
