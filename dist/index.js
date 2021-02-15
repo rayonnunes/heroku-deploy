@@ -9,40 +9,46 @@ const core = __nccwpck_require__(722);
 const exec = __nccwpck_require__(710);
 
 async function loginHeroku() {
-  const login = core.getInput('email');
-  const password = core.getInput('api_key');
+  const login = core.getInput("email");
+  const password = core.getInput("api_key");
 
-  try {	
-    await exec(`echo ${password} | docker login --username=${login} registry.heroku.com --password-stdin`);	
-    console.log('Logged in succefully ✅');	
-  } catch (error) {	
-    core.setFailed(`Authentication process faild. Error: ${error.message}`);	
-  }	
+  try {
+    await exec.exec(
+      `echo ${password} | docker login --username=${login} registry.heroku.com --password-stdin`
+    );
+    console.log("Logged in succefully ✅");
+  } catch (error) {
+    core.setFailed(`Authentication process faild. Error: ${error.message}`);
+  }
 }
 
 async function buildPushAndDeploy() {
-  const appName = core.getInput('app_name');
-  const dockerFilePath = core.getInput('dockerfile_path');
-  const buildOptions = core.getInput('options') || '';
+  const appName = core.getInput("app_name");
+  const dockerFilePath = core.getInput("dockerfile_path");
+  const buildOptions = core.getInput("options") || "";
   const herokuAction = herokuActionSetUp(appName);
-  const formation = core.getInput('formation');
-  
+  const formation = core.getInput("formation");
+
   try {
-    await exec(`docker build ${buildOptions} --tag registry.heroku.com/${appName}/${formation} ./${dockerFilePath}`);
-    console.log('Image built 🛠');
+    await exec.exec(
+      `docker build ${buildOptions} --tag registry.heroku.com/${appName}/${formation} ./${dockerFilePath}`
+    );
+    console.log("Image built 🛠");
 
-    await exec(herokuAction('push'));
-    console.log('Container pushed to Heroku Container Registry ⏫');
+    await exec.exec(herokuAction("push"));
+    console.log("Container pushed to Heroku Container Registry ⏫");
 
-    await exec(herokuAction('release'));
-    console.log('App Deployed successfully 🚀');
+    await exec.exec(herokuAction("release"));
+    console.log("App Deployed successfully 🚀");
   } catch (error) {
-    core.setFailed(`Something went wrong building your image. Error: ${error.message}`);
-  } 
+    core.setFailed(
+      `Something went wrong building your image. Error: ${error.message}`
+    );
+  }
 }
 
 /**
- * 
+ *
  * @param {string} appName - Heroku App Name
  * @returns {function}
  */
@@ -53,11 +59,11 @@ function herokuActionSetUp(appName) {
    * @returns {string}
    */
   return function herokuAction(action) {
-    const HEROKU_API_KEY = core.getInput('api_key');
+    const HEROKU_API_KEY = core.getInput("api_key");
     const exportKey = `HEROKU_API_KEY=${HEROKU_API_KEY}`;
-  
-    return `${exportKey} heroku container:${action} web --app ${appName}` 
-  }
+
+    return `${exportKey} heroku container:${action} web --app ${appName}`;
+  };
 }
 
 loginHeroku()
@@ -65,7 +71,7 @@ loginHeroku()
   .catch((error) => {
     console.log({ message: error.message });
     core.setFailed(error.message);
-  })
+  });
 
 
 /***/ }),
