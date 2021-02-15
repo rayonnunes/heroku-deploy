@@ -1,7 +1,5 @@
 const core = require('@actions/core');
-const { promisify } = require('util');
-
-const exec = promisify(require('child_process').exec);
+const exec = require('@actions/exec');
 
 async function loginHeroku() {
   const login = core.getInput('email');

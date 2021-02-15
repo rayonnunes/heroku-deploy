@@ -29,6 +29,7 @@
   "homepage": "https://github.com/jctaveras/heroku-deploy#readme",
   "dependencies": {
     "@actions/core": "^1.2.3",
+    "@actions/exec": "^1.0.4",
     "@actions/github": "^2.1.1"
   },
   "devDependencies": {
