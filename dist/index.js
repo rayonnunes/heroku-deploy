@@ -30,10 +30,8 @@ async function buildPushAndDeploy() {
   const formation = core.getInput("formation");
 
   try {
-    await exec.exec(`cd ${dockerFilePath}`);
-
     await exec.exec(
-      `docker build ${buildOptions} --tag registry.heroku.com/${appName}/${formation} .`
+      `docker build ${buildOptions} --tag registry.heroku.com/${appName}/${formation} ./${dockerFilePath}`
     );
     console.log("Image built 🛠");
 
@@ -61,7 +59,7 @@ function herokuActionSetUp(appName) {
    * @returns {string}
    */
   return function herokuAction(action) {
-    return `heroku container:${action} web --app ${appName}`;
+    return `heroku container:${action} web --app ${appName} --recursive`;
   };
 }
 
