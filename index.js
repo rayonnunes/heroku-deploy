@@ -17,6 +17,7 @@ async function loginHeroku() {
 
 async function buildPushAndDeploy() {
   const appName = core.getInput("app_name");
+  const apiKey = core.getInput("api_key");
   const dockerFilePath = core.getInput("dockerfile_path");
   const buildOptions = core.getInput("options") || "";
   const herokuAction = herokuActionSetUp(appName);
@@ -27,6 +28,8 @@ async function buildPushAndDeploy() {
       `docker build ${buildOptions} --tag registry.heroku.com/${appName}/${formation} ./${dockerFilePath}`
     );
     console.log("Image built 🛠");
+
+    await exec.exec(`export HEROKU_API_KEY=${apiKey}`);
 
     await exec.exec(herokuAction("push"));
     console.log("Container pushed to Heroku Container Registry ⏫");
@@ -52,10 +55,7 @@ function herokuActionSetUp(appName) {
    * @returns {string}
    */
   return function herokuAction(action) {
-    const HEROKU_API_KEY = core.getInput("api_key");
-    const exportKey = `HEROKU_API_KEY='${HEROKU_API_KEY}'`;
-
-    return `${exportKey} heroku container:${action} web --app ${appName}`;
+    return `heroku container:${action} web --app ${appName}`;
   };
 }
 
